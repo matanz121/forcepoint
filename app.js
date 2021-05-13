@@ -1,7 +1,7 @@
 var http = require('http');
 var handleRequest = function(request, respone){
     respone.writeHead(200);
-    respone.write("UTC time - " + new Date().toISOString().replace('T', ' ').substring(0, 19));
+    respone.write("UTC time : " + new Date().toISOString().replace('T', ' ').substring(0, 19));
     respone.write("\r\n");
 
     const { networkInterfaces } = require('os');
@@ -15,7 +15,7 @@ var handleRequest = function(request, respone){
                 if (!results[name]) {
                     results[name] = [];
                 }
-                respone.write("IPV4 Address on my Mac - " + net.address + "\n");
+                respone.write("IPV4 Address on my Mac : " + net.address + "\n");
             }
         }
     }
