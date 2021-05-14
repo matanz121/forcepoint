@@ -5,8 +5,7 @@ pipeline {
      *  More information here: https://jenkins.io/doc/book/pipeline/syntax/#agent under "dockerfile".
      */
     agent { label 'slave'
-        dockerfile {
-            dir 'pipeline/resources/npm'
+
         }
     }
 
