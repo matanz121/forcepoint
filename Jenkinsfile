@@ -4,11 +4,7 @@ pipeline {
      *  Therefore, you must use this example only in "Multibranch Pipeline" or a "Pipeline from SCM".
      *  More information here: https://jenkins.io/doc/book/pipeline/syntax/#agent under "dockerfile".
      */
-    agent { label 'slave'
-
-        }
-    }
-
+    agent { label 'slave'}
     environment {
         npm_config_cache = 'npm-cache'
     }
