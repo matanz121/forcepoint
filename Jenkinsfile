@@ -8,6 +8,7 @@ pipeline {
         dockerfile {
             dir 'pipeline/resources/npm'
         }
+        label 'slave'
     }
 
     environment {
