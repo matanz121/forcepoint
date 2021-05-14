@@ -1,5 +1,5 @@
 node {
-    def server = Artifactory.server SERVER_ID
+    def server = Artifactory.server Artifactory_Server
     def rtNpm = Artifactory.newNpmBuild()
     def dockerImage
     def buildInfo
