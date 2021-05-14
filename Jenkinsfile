@@ -41,7 +41,6 @@ pipeline {
             steps {
                 rtNpmInstall(
                         args: '--verbose',
-                        path: '/',
                         resolverId: 'npm_resolver'
                 )
             }
