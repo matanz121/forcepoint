@@ -1,35 +1,66 @@
-node {
-    def server = Artifactory.server Artifactory_Server
-    def rtNpm = Artifactory.newNpmBuild()
-    def dockerImage
-    def buildInfo
-
-    stage('Clone') {
-        git url: 'https://github.com/matanz121/forcepoint.git'
-    }
-
-    stage('Artifactory configuration') {
-        rtNpm.deployer repo: 'forcepoint-npm-local', server: server
-        rtNpm.resolver repo: 'forcepoint-npm-remote', server: server
-        buildInfo = Artifactory.newBuildInfo()
-    }
-
-    stage('Build docker image') {
-        dockerImage = docker.build("slave", "npm")
-    }
-
-    withEnv(['npm_config_cache=npm-cache']) {
-        dockerImage.inside() {
-            stage('Install npm') {
-                rtNpm.install buildInfo: buildInfo, path: 'npm-example'
-            }
-            stage('Publish npm') {
-                rtNpm.publish buildInfo: buildInfo, path: 'npm-example'
-            }
+pipeline {
+    /**
+     *  In this example, the agent's Dockerfile is within the repository.
+     *  Therefore, you must use this example only in "Multibranch Pipeline" or a "Pipeline from SCM".
+     *  More information here: https://jenkins.io/doc/book/pipeline/syntax/#agent under "dockerfile".
+     */
+    agent {
+        dockerfile {
+            dir 'npm'
         }
     }
 
-    stage('Publish build info') {
-        server.publishBuildInfo buildInfo
+    environment {
+        npm_config_cache = 'npm-cache'
+    }
+
+    stages {
+        stage('Artifactory configuration') {
+            steps {
+                rtServer(
+                        id: "Artifactory_Server",
+                        url: "http://10.164.237.25:8082/artifactory",
+                        credentialsId: CREDENTIALS
+                )
+
+                rtNpmResolver(
+                        id: "NPM_RESOLVER",
+                        serverId: "Artifactory_Server",
+                        repo: "forcepoint-npm-remote"
+                )
+
+                rtNpmDeployer(
+                        id: "NPM_DEPLOYER",
+                        serverId: "Artifactory_Server",
+                        repo: "forcepoint-npm-local"
+                )
+            }
+        }
+
+        stage('Exec npm install') {
+            steps {
+                rtNpmInstall(
+                        path: "npm-example",
+                        resolverId: "NPM_RESOLVER"
+                )
+            }
+        }
+
+        stage('Exec npm publish') {
+            steps {
+                rtNpmPublish(
+                        path: "npm-example",
+                        deployerId: "NPM_DEPLOYER"
+                )
+            }
+        }
+
+        stage('Publish build info') {
+            steps {
+                rtPublishBuildInfo(
+                        serverId: "ARTIFACTORY_SERVER"
+                )
+            }
+        }
     }
 }
