@@ -4,11 +4,10 @@ pipeline {
      *  Therefore, you must use this example only in "Multibranch Pipeline" or a "Pipeline from SCM".
      *  More information here: https://jenkins.io/doc/book/pipeline/syntax/#agent under "dockerfile".
      */
-    agent {
+    agent { label 'slave'
         dockerfile {
             dir 'pipeline/resources/npm'
         }
-        label 'slave'
     }
 
     environment {
