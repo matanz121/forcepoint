@@ -1,13 +1,35 @@
-pipeline {
-    agent {label 'slave'}
-    stages {
-        stage('Build') {
-            steps{
-                script{
-                    sh 'npm init -y'
-                    sh 'npm install express --save'
-                }
+node {
+    def server = Artifactory.server SERVER_ID
+    def rtNpm = Artifactory.newNpmBuild()
+    def dockerImage
+    def buildInfo
+
+    stage('Clone') {
+        git url: 'https://github.com/matanz121/forcepoint.git'
+    }
+
+    stage('Artifactory configuration') {
+        rtNpm.deployer repo: 'npm-local', server: server
+        rtNpm.resolver repo: 'npm-remote', server: server
+        buildInfo = Artifactory.newBuildInfo()
+    }
+
+    stage('Build docker image') {
+        dockerImage = docker.build("slave", "jenkins-examples/pipeline-examples/resources/npm")
+    }
+
+    withEnv(['npm_config_cache=npm-cache']) {
+        dockerImage.inside() {
+            stage('Install npm') {
+                rtNpm.install buildInfo: buildInfo, path: 'npm-example'
+            }
+            stage('Publish npm') {
+                rtNpm.publish buildInfo: buildInfo, path: 'npm-example'
             }
         }
+    }
+
+    stage('Publish build info') {
+        server.publishBuildInfo buildInfo
     }
 }
