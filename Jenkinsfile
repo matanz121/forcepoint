@@ -40,7 +40,7 @@ pipeline {
         stage('Exec npm install') {
             steps {
                 rtNpmInstall(
-                        args: '--verbose',
+                        tool: 'nodee',
                         resolverId: 'npm_resolver'
                 )
             }
