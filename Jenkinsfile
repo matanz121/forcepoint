@@ -6,7 +6,7 @@ pipeline {
      */
     agent {
         dockerfile {
-            dir 'npm'
+            dir 'pipeline/resources/npm'
         }
     }
 
