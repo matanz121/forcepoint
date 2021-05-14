@@ -18,20 +18,20 @@ pipeline {
         stage('Artifactory configuration') {
             steps {
                 rtServer(
-                        id: "Artifactory_Server",
+                        id: 'Artifactory_Server',
                         url: "http://10.164.237.25:8082/artifactory",
                         credentialsId: CREDENTIALS
                 )
 
                 rtNpmResolver(
                         id: "NPM_RESOLVER",
-                        serverId: "Artifactory_Server",
+                        serverId: 'Artifactory_Server',
                         repo: "forcepoint-npm-remote"
                 )
 
                 rtNpmDeployer(
                         id: "NPM_DEPLOYER",
-                        serverId: "Artifactory_Server",
+                        serverId: 'Artifactory_Server',
                         repo: "forcepoint-npm-local"
                 )
             }
@@ -58,7 +58,7 @@ pipeline {
         stage('Publish build info') {
             steps {
                 rtPublishBuildInfo(
-                        serverId: "ARTIFACTORY_SERVER"
+                        serverId: 'Artifactory_Server'
                 )
             }
         }
