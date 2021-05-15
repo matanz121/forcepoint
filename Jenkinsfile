@@ -21,24 +21,10 @@ pipeline {
                         credentialsId: CREDENTIALS
                 )
 
-                rtNpmResolver(
-                        id: 'npm_resolver',
-                        serverId: 'Artifactory_Server',
-                        repo: 'forcepoint-npm-remote'
-                )
-
                 rtNpmDeployer(
                         id: 'npm_deployer',
                         serverId: 'Artifactory_Server',
                         repo: 'forcepoint-npm-local'
-                )
-            }
-        }
-
-        stage('Exec npm install') {
-            steps {
-                rtNpmCi(
-                        resolverId: 'npm_resolver'
                 )
             }
         }
