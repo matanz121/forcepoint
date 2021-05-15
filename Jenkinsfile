@@ -5,9 +5,7 @@ pipeline {
      *  More information here: https://jenkins.io/doc/book/pipeline/syntax/#agent under "dockerfile".
      */
     agent {
-        dockerfile { true
-            label 'slave'
-        }
+        dockerfile { label 'slave' }
     }
 
     environment {
