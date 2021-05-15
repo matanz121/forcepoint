@@ -5,7 +5,7 @@ pipeline {
      *  More information here: https://jenkins.io/doc/book/pipeline/syntax/#agent under "dockerfile".
      */
     agent {
-        dockerfile { true }
+        dockerfile { label 'master' }
     }
 
     environment {
@@ -38,7 +38,7 @@ pipeline {
         stage('Exec npm install') {
             steps {
                 rtNpmInstall(
-                        tool: 'nodee',
+                        tool: 'node',
                         resolverId: 'npm_resolver'
                 )
             }
@@ -47,7 +47,7 @@ pipeline {
         stage('Exec npm publish') {
             steps {
                 rtNpmPublish(
-                        tool: 'nodee',
+                        tool: 'node',
                         deployerId: 'npm_deployer'
                 )
             }
