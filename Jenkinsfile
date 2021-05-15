@@ -1,12 +1,5 @@
 pipeline {
-    /**
-     *  In this example, the agent's Dockerfile is within the repository.
-     *  Therefore, you must use this example only in "Multibranch Pipeline" or a "Pipeline from SCM".
-     *  More information here: https://jenkins.io/doc/book/pipeline/syntax/#agent under "dockerfile".
-     */
-    agent {
-        dockerfile { label 'master' }
-    }
+    agent { label 'master' }
 
     environment {
         npm_config_cache = 'npm-cache'
@@ -29,6 +22,18 @@ pipeline {
             }
         }
 
+        stage('Checkout Source') {
+            steps {
+                git url:'https://github.com/matanz121/forcepoint.git', branch:'master'
+            }
+        }
+
+        stage('Install dependencies') {
+            steps {
+                sh 'npm install'
+            }
+        }
+
         stage('Exec npm publish') {
             steps {
                 rtNpmPublish(
@@ -36,6 +41,7 @@ pipeline {
                 )
             }
         }
+
 
         stage('Publish build info') {
             steps {
