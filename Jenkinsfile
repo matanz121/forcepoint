@@ -37,7 +37,7 @@ pipeline {
 
         stage('Exec npm install') {
             steps {
-                rtNpmInstall(
+                rtNpmCi(
                         resolverId: 'npm_resolver'
                 )
             }
