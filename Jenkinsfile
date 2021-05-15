@@ -38,7 +38,6 @@ pipeline {
         stage('Exec npm install') {
             steps {
                 rtNpmInstall(
-                        tool: 'node',
                         resolverId: 'npm_resolver'
                 )
             }
@@ -47,7 +46,6 @@ pipeline {
         stage('Exec npm publish') {
             steps {
                 rtNpmPublish(
-                        tool: 'node',
                         deployerId: 'npm_deployer'
                 )
             }
