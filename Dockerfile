@@ -1,6 +1,6 @@
-FROM node:10
-USER root
-WORKDIR /app
+FROM openjdk:latest
+RUN curl -sL https://rpm.nodesource.com/setup_12.x | bash - \
+  && yum install -y nodejs
 COPY package.json /app
 RUN npm install
 COPY . /app
