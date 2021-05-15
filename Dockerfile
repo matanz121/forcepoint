@@ -1,6 +1,6 @@
-FROM openjdk:latest
-RUN curl -sL https://rpm.nodesource.com/setup_12.x | bash - \
-  && yum install -y nodejs
+FROM node:12
+RUN apt-get update && apt-get install -y openjdk-8-jdk
+WORKDIR /app
 COPY package.json /app
 RUN npm install
 COPY . /app
