@@ -15,7 +15,7 @@ node {
     }
 
     stage('Build docker image') {
-        dockerImage = docker.build("forcepoint")
+        dockerImage = docker.build("forcepoint:${env.BUILD_ID}")
     }
 
     withEnv(['npm_config_cache=npm-cache']) {
