@@ -22,15 +22,21 @@ pipeline {
             }
         }
 
-        stage('Checkout Source') {
-            steps {
-                git url:'https://github.com/matanz121/forcepoint.git', branch:'master'
-            }
-        }
-
         stage('Install dependencies') {
             steps {
                 sh 'npm install'
+            }
+        }
+
+        stage('Initialize the project') {
+            steps {
+                sh 'npm init'
+            }
+        }
+
+        stage ('Build & Deploy') {
+            steps {
+                docker.build(forcepoint)
             }
         }
 
