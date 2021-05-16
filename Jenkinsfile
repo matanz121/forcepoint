@@ -1,60 +1,35 @@
-pipeline {
-    agent { label 'master' }
+node {
+    def server = Artifactory.server SERVER_ID
+    def rtNpm = Artifactory.newNpmBuild()
+    def dockerImage
+    def buildInfo
 
-    environment {
-        npm_config_cache = 'npm-cache'
+    stage('Clone') {
+        git url: 'https://github.com/matanz121/forcepoint.git/'
     }
 
-    stages {
-        stage('Artifactory configuration') {
-            steps {
-                rtServer(
-                        id: 'Artifactory_Server',
-                        url: 'http://10.164.237.25:8082/artifactory',
-                        credentialsId: CREDENTIALS
-                )
+    stage('Artifactory configuration') {
+        rtNpm.deployer repo: 'forcepoint-npm-local', server: server
+        rtNpm.resolver repo: 'forcepoint-npm-remote', server: server
+        buildInfo = Artifactory.newBuildInfo()
+    }
 
-                rtNpmDeployer(
-                        id: 'npm_deployer',
-                        serverId: 'Artifactory_Server',
-                        repo: 'forcepoint-npm-local'
-                )
+    stage('Build docker image') {
+        dockerImage = docker.build("forcepoint")
+    }
+
+    withEnv(['npm_config_cache=npm-cache']) {
+        dockerImage.inside() {
+            stage('Install npm') {
+                rtNpm.install buildInfo: buildInfo
+            }
+            stage('Publish npm') {
+                rtNpm.publish buildInfo: buildInfo
             }
         }
+    }
 
-        stage('Install dependencies') {
-            steps {
-                sh 'npm install'
-            }
-        }
-
-        stage('Initialize the project') {
-            steps {
-                sh 'npm init'
-            }
-        }
-
-        stage ('Build & Deploy') {
-            steps {
-                docker.build(forcepoint)
-            }
-        }
-
-        stage('Exec npm publish') {
-            steps {
-                rtNpmPublish(
-                        deployerId: 'npm_deployer'
-                )
-            }
-        }
-
-
-        stage('Publish build info') {
-            steps {
-                rtPublishBuildInfo(
-                        serverId: 'Artifactory_Server'
-                )
-            }
-        }
+    stage('Publish build info') {
+        server.publishBuildInfo buildInfo
     }
 }
