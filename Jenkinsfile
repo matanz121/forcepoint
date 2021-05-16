@@ -20,6 +20,9 @@ node {
 
     withEnv(['npm_config_cache=npm-cache']) {
         dockerImage.inside() {
+            stage('Install npm') {
+                rtNpm.install buildInfo: buildInfo
+            }
             stage('Publish npm') {
                 rtNpm.publish buildInfo: buildInfo
             }
