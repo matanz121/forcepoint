@@ -31,8 +31,6 @@ node {
     }
 
     stage('Deploying into k8s'){
-        steps{
-            sh 'kubectl apply -f forcepoint.yaml'
-        }
+        sh 'kubectl apply -f forcepoint.yaml'
     }
 }
