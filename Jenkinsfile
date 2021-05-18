@@ -23,7 +23,7 @@ node {
     }
 
     stage ('Push image to Artifactory') {
-        rtDocker.push "ci-kubernetes-master-1.node.cyber.local:8200/docker-local/forcepoint:${env.BUILD_ID}", 'docker-local'
+        rtDocker.push 'ci-kubernetes-master-1.node.cyber.local:8200/docker-local/forcepoint:' + "${env.BUILD_ID}", 'docker-local'
     }
 
     stage ('Publish build info') {
