@@ -29,4 +29,10 @@ node {
     stage ('Publish build info') {
         server.publishBuildInfo buildInfo
     }
+
+    stage('Deploying into k8s'){
+        steps{
+            sh 'kubectl apply -f forcepoint.yaml'
+        }
+    }
 }
