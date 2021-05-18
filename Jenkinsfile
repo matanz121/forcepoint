@@ -19,7 +19,7 @@ node {
     }
 
     stage('Build docker image') {
-        docker.build("forcepoint:${env.BUILD_ID}")
+        docker.build("ci-kubernetes-master-1.node.cyber.local:8200/docker-local/forcepoint:${env.BUILD_ID}")
     }
 
     stage ('Push image to Artifactory') {
