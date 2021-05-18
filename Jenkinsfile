@@ -23,7 +23,7 @@ node {
     }
 
     stage ('Push image to Artifactory') {
-        rtDocker.push ARTIFACTORY_DOCKER_REGISTRY + '/"forcepoint:${env.BUILD_ID}"', 'docker-local', buildInfo
+        rtDocker.push "forcepoint:${env.BUILD_ID}", 'docker-local', buildInfo
     }
 
     stage ('Publish build info') {
