@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mydeploy
+  name: forcepoint
   labels:
     app: node
 spec:
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: node
-        image: matanz121/forcepoint
+        image: ci-kubernetes-master-1.node.cyber.local:8082/docker-local/forcepoint
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
