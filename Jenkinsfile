@@ -18,8 +18,8 @@ node {
         rtDocker.addProperty("project-name", "forcepoint").addProperty("status", "stable")
     }
 
-    stage ('Build docker image') {
-        docker.build(ARTIFACTORY_DOCKER_REGISTRY + '/"forcepoint:${env.BUILD_ID}"')
+    stage('Build docker image') {
+        dockerImage = docker.build("forcepoint:${env.BUILD_ID}")
     }
 
     stage ('Push image to Artifactory') {
