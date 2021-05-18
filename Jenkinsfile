@@ -1,32 +1,32 @@
 node {
-    def server = Artifactory.server SERVER_ID
-    def rtNpm = Artifactory.newNpmBuild()
-    def dockerImage
+    def server
+    def rtDocker
     def buildInfo
 
-    stage('Clone') {
+    stage ('Clone') {
         git url: 'https://github.com/matanz121/forcepoint.git/'
     }
 
-    stage('Artifactory configuration') {
-        rtNpm.deployer repo: 'forcepoint-npm-local', server: server
-        rtNpm.resolver repo: 'forcepoint-npm-remote', server: server
+    stage ('Artifactory configuration') {
+        server = Artifactory.server SERVER_ID
+        rtDocker = Artifactory.docker server: server
         buildInfo = Artifactory.newBuildInfo()
     }
 
-    stage('Build docker image') {
-        dockerImage = docker.build("forcepoint:${env.BUILD_ID}")
+    stage ('Add properties') {
+        // Attach custom properties to the published artifacts:
+        rtDocker.addProperty("project-name", "forcepoint").addProperty("status", "stable")
     }
 
-    withEnv(['npm_config_cache=npm-cache']) {
-        dockerImage.inside() {
-            stage('Publish npm') {
-                rtNpm.publish buildInfo: buildInfo
-            }
-        }
+    stage ('Build docker image') {
+        docker.build(ARTIFACTORY_DOCKER_REGISTRY + '/"forcepoint:${env.BUILD_ID}"')
     }
 
-    stage('Publish build info') {
+    stage ('Push image to Artifactory') {
+        rtDocker.push ARTIFACTORY_DOCKER_REGISTRY + '/"forcepoint:${env.BUILD_ID}"', 'docker-local', buildInfo
+    }
+
+    stage ('Publish build info') {
         server.publishBuildInfo buildInfo
     }
 }
