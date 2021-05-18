@@ -30,7 +30,7 @@ node {
         server.publishBuildInfo buildInfo
     }
 
-    stage('Deploying into k8s'){
-        sh 'kubectl apply -f forcepoint.yaml'
+    stage('Deploy App') {
+        kubernetesDeploy(configs: "forcepoint.yaml", kubeconfigId: "mykubeconfig")
     }
 }
