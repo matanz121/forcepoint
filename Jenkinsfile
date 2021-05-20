@@ -44,5 +44,12 @@ pipeline {
                 )
             }
         }
+        stage ('K8s deployment') {
+            steps {
+                script (
+                    kubernetesDeploy(configs: "forcepoint.yaml", kubeconfigId: "mykubeconfig")
+                )
+            }
+        }
     }
 }
