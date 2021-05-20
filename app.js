@@ -20,7 +20,7 @@ var handleRequest = function(request, respone){
         }
     }
     
-    respone.end("No design at all & No Functions - simple as much as I can");
+    respone.end("No design at all & No Functions - simple as much as I can...");
 }
 var www = http.createServer(handleRequest);
 www.listen(3000);
