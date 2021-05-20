@@ -1,36 +1,48 @@
-node {
-    def server
-    def rtDocker
-    def buildInfo
+pipeline {
+    agent {label 'k8s_server'}
 
-    stage ('Clone') {
-        git url: 'https://github.com/matanz121/forcepoint.git/'
-    }
+    stages {
+        stage ('Clone') {
+            steps {
+                git branch: 'master', url: "https://github.com/matanz121/forcepoint.git/"
+            }
+        }
 
-    stage ('Artifactory configuration') {
-        server = Artifactory.server SERVER_ID
-        rtDocker = Artifactory.docker server: server
-        buildInfo = Artifactory.newBuildInfo()
-    }
+        stage ('Artifactory configuration') {
+            steps {
+                rtServer (
+                    id: 'Artifactory_Server',
+                    url: 'http://ci-kubernetes-master-1.node.cyber.local:8082/artifactory',
+                    credentialsId: CREDENTIALS
+                )
+            }
+        }
 
-    stage ('Add properties') {
-        // Attach custom properties to the published artifacts:
-        rtDocker.addProperty("project-name", "forcepoint").addProperty("status", "stable")
-    }
+        stage ('Build docker image') {
+            steps {
+                script {
+                    docker.build("ci-kubernetes-master-1.node.cyber.local:8082/docker-local/forcepoint:${env.BUILD_ID}")
+                }
+            }
+        }
 
-    stage('Build docker image') {
-        docker.build("ci-kubernetes-master-1.node.cyber.local:8082/docker-local/forcepoint:${env.BUILD_ID}")
-    }
+        stage ('Push image to Artifactory') {
+            steps {
+                rtDockerPush(
+                    serverId: 'Artifactory_Server',
+                    image: 'ci-kubernetes-master-1.node.cyber.local:8082/docker-local/forcepoint:' + "${env.BUILD_ID}",
+                    targetRepo: 'docker-local',
+                    properties: 'project-name=forcepoint;status=stable'
+                )
+            }
+        }
 
-    stage ('Push image to Artifactory') {
-        rtDocker.push 'ci-kubernetes-master-1.node.cyber.local:8082/docker-local/forcepoint:' + "${env.BUILD_ID}", 'docker-local', buildInfo
-    }
-
-    stage ('Publish build info') {
-        server.publishBuildInfo buildInfo
-    }
-
-    stage('Deploy App') {
-        kubernetesDeploy(configs: "forcepoint.yaml", kubeconfigId: "mykubeconfig")
+        stage ('Publish build info') {
+            steps {
+                rtPublishBuildInfo (
+                    serverId: 'Artifactory_Server',
+                )
+            }
+        }
     }
 }
