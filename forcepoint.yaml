@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: node
-        image: ci-kubernetes-master-1.node.cyber.local:8082/docker-local/forcepoint:22
+        image: ci-kubernetes-master-1.node.cyber.local:8082/docker-local/forcepoint:23
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
