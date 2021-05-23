@@ -17,6 +17,12 @@ pipeline {
                 )
             }
         }
+        
+        stage ('Build docker image') {
+            steps {
+                sh "sed -ir 's/__TAG__/${env.BUILD_ID}/g' forcepoint.yaml"
+            }
+        }
 
         stage ('Build docker image') {
             steps {
