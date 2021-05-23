@@ -18,7 +18,7 @@ pipeline {
             }
         }
         
-        stage ('Build docker image') {
+        stage ('Change version tag number') {
             steps {
                 sh "sed -ir 's/__TAG__/${env.BUILD_ID}/g' forcepoint.yaml"
             }
